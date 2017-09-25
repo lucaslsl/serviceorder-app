@@ -1,0 +1,28 @@
+.modal-header
+  h4(ng-if="!isUpdate") Novo Item de cobrança
+  h4(ng-if="isUpdate") Editar Item de cobrança
+
+.modal-body 
+  form(name="form", novalidate, valdr-type="BillableItem")
+    .container-fluid    
+      .row
+        .col-md-6
+          .form-group(valdr-form-group)
+            label Nome *
+            input.form-control(type="text", id="name", name="name", ng-model="billableItem.name")
+
+        .col-md-6
+          .form-group(valdr-form-group)
+            label Valor *
+            input.form-control(type="text", id="price", name="price", ng-model="billableItem.price", ui-money-mask="maskDecimals")
+
+      .row
+        .col-md-12
+          .form-group(valdr-form-group)
+            label Descrição
+            textarea.form-control(type="text", id="description", name="description", ng-model="billableItem.description")
+  
+
+.modal-footer
+  button.btn.btn-default(ng-click="cancel()") Cancelar
+  button.btn.btn-primary(ng-click="confirm(form)") Salvar 

@@ -1,0 +1,18 @@
+.modal-header
+  h4(ng-if="!isUpdate") Novo Orçamento
+  h4(ng-if="isUpdate") Editar Orçamento
+
+.modal-body 
+  form(name="form", novalidate, valdr-type="Budget", autocomplete="off")
+    .container-fluid    
+      .row
+        .col-md-12
+          .form-group(valdr-form-group)
+            label Cliente (CPF/CNPJ)
+            input.form-control(type="text", id="customer", name="customer", ng-model="budget.customer",uib-typeahead="item as item.national_registration_number for item in customers | filter:{national_registration_number:$viewValue}", typeahead-on-select="customerSelected()", typeahead-template-url="templates/budget/customer_typeahead.html", placeholder="CPF/CNPJ (somente numeros)")
+
+  
+
+.modal-footer
+  button.btn.btn-default(ng-click="cancel()") Cancelar
+  button.btn.btn-primary(ng-click="confirm(form)") Salvar 

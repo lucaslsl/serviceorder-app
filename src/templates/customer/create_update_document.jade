@@ -1,0 +1,44 @@
+.modal-header
+  h4(ng-if="!isUpdate") Novo Documento
+  h4(ng-if="isUpdate") Editar Documento
+
+.modal-body 
+  form(name="form", novalidate, valdr-type="CustomerDocument")
+    .container-fluid    
+      .row
+        .col-md-6
+          .form-group(valdr-form-group)
+            label Nome *
+            input.form-control(type="text", id="name", name="name", ng-model="doc.name")
+
+        .col-md-6
+          .form-group(valdr-form-group)
+            label Número
+            input.form-control(type="text", id="number", name="number", ng-model="doc.number")
+
+      .row
+        .col-md-6
+          .form-group(valdr-form-group)
+            label Autoridade
+            input.form-control(type="text", id="authority", name="authority", ng-model="doc.authority")
+
+        .col-md-6
+          .form-group
+            label Data de Emissão *
+            .input-group.datepicker-wrapper(style="float:left;")
+              input.form-control(type='text', uib-datepicker-popup='dd/MM/yyyy', 
+                ng-model='doc.issue_date', is-open="openedDatePickers['doc.issue_date']", current-text="Hoje", clear-text="Limpar", close-text='Fechar', ng-click="openDatePicker('doc.issue_date', $event)", name="issue_date")
+              span.input-group-btn
+                button.btn.btn-default(type='button', ng-click="openDatePicker('doc.issue_date',$event)")
+                  em.fa.fa-calendar
+
+      .row
+        .col-md-12
+          .form-group(valdr-form-group)
+            label Observações
+            textarea.form-control(type="text", id="observations", name="observations", ng-model="doc.observations")
+  
+
+.modal-footer
+  button.btn.btn-default(ng-click="cancel()") Cancelar
+  button.btn.btn-primary(ng-click="confirm(form)") Salvar 

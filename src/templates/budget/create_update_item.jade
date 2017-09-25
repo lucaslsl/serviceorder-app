@@ -1,0 +1,36 @@
+.modal-header
+  h4(ng-if="!isUpdate") Novo Item de Orçamento
+  h4(ng-if="isUpdate") Editar Item de Orçamento
+
+.modal-body 
+  form(name="form", novalidate, valdr-type="BudgetItem")
+    .container-fluid
+      .row
+        .col-md-8
+          .form-group(valdr-form-group)
+            label Item de Cobrança *
+            select.form-control(type="text", id="billable_item", name="billable_item", ng-model="item.billable_item_id",ng-options="item.id as item.name for item in billable_items", ng-change="setBillableItemPrice(item.billable_item_id)")
+        .col-md-4
+          .form-group
+            label Valor
+            input.form-control(type="text", id="price", name="price", ng-model="item.price", ui-money-mask="maskDecimals", ng-change="totalCostChanged()", disabled)
+
+      .row
+        .col-md-4
+          .form-group(valdr-form-group)
+            label Quantidade *
+            input.form-control(type="text", id="quantity", name="quantity", ng-model="item.quantity", ng-change="totalCostChanged()")
+
+        .col-md-4
+          .form-group
+            label Desconto
+            input.form-control(type="text", ui-percentage-mask="0", id="discount", name="discount", ng-model="item.discount", ng-change="totalCostChanged()")
+
+        .col-md-4
+          .form-group
+            label Total
+            input.form-control(type="text", ng-model="totalCost", ui-money-mask="maskDecimals", disabled)
+
+.modal-footer
+  button.btn.btn-default(ng-click="cancel()") Cancelar
+  button.btn.btn-primary(ng-click="confirm(form)") Salvar 

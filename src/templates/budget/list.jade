@@ -1,0 +1,137 @@
+//- .row
+  .col-md-3.col-md-offset-3
+    .form-group
+      input.form-control(type="text", id="search_query", name="search_query", ng-model="searchAttrs.query", placeholder="CPF/CNPJ", ui-br-cpfcnpj-mask)
+
+  .col-md-3
+    .form-group
+      .input-group
+        button.btn.btn-default(ng-click="search()") Pesquisar &nbsp;&nbsp;&nbsp;
+          i.fa.fa-search
+
+
+.row
+  .col-md-12
+    rd-widget
+      rd-widget-header(icon="fa-tasks",title="Lista de Orçamentos", ng-if="!budgetsShowOne")
+        button.btn.btn-success(ng-click="create()") Adicionar &nbsp;&nbsp;&nbsp;
+          i.fa.fa-plus
+      rd-widget-body(classes="{{!loadingBudgets && budgets.length>0 ? 'no-padding' : ''}}")
+        rd-loading(ng-if="loadingBudgets")
+        uib-alert(type="info", ng-if="!loadingBudgets && budgets.length==0")
+          p.text-center.vertical-align-middle Esta seção não possui items cadastrados.        
+        
+        .container-fluid(ng-show="!loadingBudgets")
+          //- .row.mg-top-20
+
+          .row.mg-top-20
+            .panel.panel-default.col-md-12(ng-repeat='budget in budgets')
+              .row.mg-top-10
+                .col-md-3.mg-top-5
+                  p.mg-0
+                    span.label.label-info(ng-if="budget.closed && !budget._embedded.order")
+                      span Fechado&nbsp;
+                    span.label.label-default(ng-if="!budget.closed")
+                      span Aberto&nbsp;
+                    a.label.label-success(ng-if="budget._embedded.order", ui-sref='base.order_show({orderId: budget._embedded.order.id})')
+                      span Ordem gerada&nbsp;
+                      i.fa.fa-external-link
+
+                  p.mg-0
+                    span.gray-txt Código:&nbsp;
+                    span {{budget.id}}
+                  
+                .col-md-6.mg-top-5
+                  p.mg-0
+                    span.gray-txt Cliente:&nbsp;
+                    //- span {{budget._expanded.customer.name}}
+                    a.link-label(ui-sref='base.customer_show({customerId: budget._expanded.customer.id})')
+                      span {{budget._expanded.customer.name}}&nbsp;
+                      i.fa.fa-external-link
+                  p.mg-0
+                    span.gray-txt Total:&nbsp;
+                    input.no-border(type="text", ng-model="budget.total", ng-disabled="true", ui-money-mask="maskDecimals")
+                  
+
+                  
+                  
+                .col-md-3
+                  .pull-right
+                    .btn-group.btn-group-sm(ng-if="!budget.closed")
+                      button.btn.btn-primary(ng-click="closeBudget(budget)") Fechar 
+                      | &nbsp;
+                    .btn-group.btn-group-sm(ng-if="budget.closed && !budget._embedded.order")
+                      button.btn.btn-primary(ng-click="order(budget)") Gerar Ordem 
+                      | &nbsp;
+                    .btn-group.btn-group-sm(ng-if="!budgetsShowOne")
+                      a.btn.btn-default(ui-sref='base.budget_show({budgetId: budget.id})')
+                       i.fa.fa-file-text-o.fa-lg
+                      | &nbsp;
+                    .btn-group.btn-group-sm(ng-if="budgetsShowOne")
+                      button.btn.btn-danger(ng-click="delete(budget)", ng-disabled="budget._embedded.order")
+                       i.fa.fa-remove.fa-lg
+
+
+              .row(ng-if="budgetsShowOne")
+                uib-accordion.col-md-12(close-others="true")
+
+                  uib-accordion-group.panel-default(is-open="itemsOpen")
+                    uib-accordion-heading
+                      span.cursor-pointer.blue-txt(style='font-size:12px;') Items
+                      i.cursor-pointer.pull-right.glyphicon(ng-class="{'glyphicon-chevron-down': itemsOpen, 'glyphicon-chevron-right': !itemsOpen}")
+
+                    .table-responsive(ng-if='budget._embedded.items.length>0')
+                      table.table.table-bordered.table-striped
+                        tbody
+                          tr
+                            th.text-left.vertical-align-middle Nome
+                            th.text-right.vertical-align-middle Preço/Unidade
+                            th.text-right.vertical-align-middle Qtd.
+                            th.text-right.vertical-align-middle Desconto
+                            th.text-right.vertical-align-middle Total
+                            th.text-center.vertical-align-middle Status
+                            th
+
+                          tr(ng-repeat="item in budget._embedded.items")
+                            td.text-left.vertical-align-middle(style="width: 25%") {{item._expanded.billable_item.name}}
+                            td.text-right.vertical-align-middle(style="width: 15%") 
+                              input.form-control.text-right.no-border.bg-transparent.no-box-shadow(type="text", ng-model="item.price", ui-money-mask="maskDecimals", disabled)
+                            td.text-right.vertical-align-middle(style="width: 10%") {{item.quantity}}
+                            td.text-right.vertical-align-middle(style="width: 10%")
+                              input.form-control.text-right.no-border.bg-transparent.no-box-shadow(type="text", min="0", max="100", ui-percentage-mask="0", ng-model="item.discount", disabled)
+                            td.text-right.vertical-align-middle(style="width: 15%") 
+                              input.form-control.text-right.no-border.bg-transparent.no-box-shadow(type="text", ng-model="item.total", ui-money-mask="maskDecimals", disabled)
+                            td.text-center.vertical-align-middle(style="width: 10%")
+                              span.label.label-info(ng-if="item.approved") Aprovado
+                              button.btn.btn-primary(ng-if="!item.approved", ng-click="approveItem(item)", ng-disabled="budget.closed || item.approved") Aprovar
+                            td.text-center.vertical-align-middle(style="width: 15%")
+                              .btn-group.btn-group-sm
+                                button.btn.btn-primary(ng-click="editItem(item)", ng-disabled="budget.closed || item.approved")
+                                 i.fa.fa-edit
+                                | &nbsp;
+                              .btn-group.btn-group-sm
+                                button.btn.btn-danger(ng-click="deleteItem(item)", ng-disabled="budget.closed || item.approved")
+                                 i.fa.fa-remove
+
+                    .row.mg-0
+                      .col-md-12
+                        .btn-group.pull-right
+                          button.btn.btn-success(ng-click="createItem(budget)", ng-disabled="budget.closed") 
+                            i.fa.fa-plus
+
+
+              .row.mg-0
+                .col-md-3
+                  p.mg-0
+                    span.txt-11.gray-txt-light.italic-txt Adicionado em 
+                    span.txt-11.gray-txt-light.italic-txt(ng-model="budget.created_at", br-date-mask)
+                .col-md-3
+                  p.mg-0
+                    span.txt-11.gray-txt-light.italic-txt Atualizado em 
+                    span.txt-11.gray-txt-light.italic-txt(ng-model="budget.updated_at", br-date-mask)
+
+          
+
+      rd-widget-footer(ng-if="!budgetsShowOne")
+        uib-pagination.pagination-sm.pull-right(total-items="pagination.totalCount", ng-model="pagination.currentPage",ng-change="pageChanged()", first-text="Primeira", last-text="Última", next-text="Proxima", previous-text="Anterior", max-size="pagination.maxSize", items-per-page="pagination.perPage")
+        .clearfix

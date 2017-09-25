@@ -1,0 +1,23 @@
+.modal-header
+  h4(ng-if="!isUpdate") Novo Cliente
+  h4(ng-if="isUpdate") Editar Cliente
+
+.modal-body 
+  form(name="form", novalidate, valdr-type="Customer",autocomplete="off")
+    .container-fluid    
+      .row
+        .col-md-12
+          .form-group(valdr-form-group)
+            label Nome *
+            input.form-control(type="text", id="name", name="name", ng-model="customer.name")
+
+      .row
+        .col-md-6
+          .form-group(valdr-form-group)
+            label CPF/CNPJ *
+            input.form-control(type="text", id="national_registration_number", name="national_registration_number", ng-model="customer.national_registration_number", ui-br-cpfcnpj-mask)
+  
+
+.modal-footer
+  button.btn.btn-default(ng-click="cancel()") Cancelar
+  button.btn.btn-primary(ng-click="confirm(form)") Salvar 

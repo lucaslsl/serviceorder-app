@@ -1,0 +1,22 @@
+.modal-header
+  h4(ng-if="!isUpdate") Novo Atributo
+  h4(ng-if="isUpdate") Editar Atributo
+
+.modal-body 
+  form(name="form", novalidate, valdr-type="AdditionalInformation")
+    .container-fluid    
+      .row
+        .col-md-6
+          .form-group(valdr-form-group)
+            label Chave *
+            input.form-control(type="text", id="key", name="key", ng-model="info.key")
+
+        .col-md-6
+          .form-group(valdr-form-group)
+            label Valor
+            input.form-control(type="text", id="value", name="value", ng-model="info.value")
+  
+
+.modal-footer
+  button.btn.btn-default(ng-click="cancel()") Cancelar
+  button.btn.btn-primary(ng-click="confirm(form)") Salvar 

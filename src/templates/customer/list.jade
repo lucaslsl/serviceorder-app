@@ -1,0 +1,137 @@
+.row(ng-if="!customersShowOne")
+  .col-md-3.col-md-offset-3
+    .form-group
+      input.form-control(type="text", id="search_query", name="search_query", ng-model="searchAttrs.query", placeholder="CPF/CNPJ", ui-br-cpfcnpj-mask)
+      //- input.form-control(type="text", id="search_query", name="search_query", ng-model="searchAttrs.query", placeholder="{{searchAttrs.type==='NAME' ? 'Nome' : 'Habilitação'}}")
+    //- .form-group
+      input(type="checkbox", id="searchByName", name="searchByName", ng-model="searchAttrs.type", ng-true-value="'NAME'", ng-false-value="'NONE'")
+      | &nbsp;Nome&nbsp;&nbsp;&nbsp;&nbsp;
+      input(type="checkbox", id="searchByLicense", name="searchByLicense", ng-model="searchAttrs.type", ng-true-value="'LICENSE'", ng-false-value="'NONE'")
+      | &nbsp;Habilitação
+
+  .col-md-3
+    .form-group
+      .input-group
+        button.btn.btn-default(ng-click="search()") Pesquisar &nbsp;&nbsp;&nbsp;
+          i.fa.fa-search
+
+
+.row
+  .col-md-12
+    rd-widget
+      rd-widget-header(icon="fa-tasks",title="Lista de Clientes", ng-if="!customersShowOne")
+        button.btn.btn-success(ng-click="create()") Adicionar &nbsp;&nbsp;&nbsp;
+          i.fa.fa-plus
+      rd-widget-body(classes="{{!loadingCustomers && customers.length>0 ? 'no-padding' : ''}}")
+        rd-loading(ng-if="loadingCustomers")
+        uib-alert(type="info", ng-if="!loadingCustomers && customers.length==0")
+          p.text-center.vertical-align-middle Esta seção não possui items cadastrados.        
+        
+        .container-fluid(ng-show="!loadingCustomers")
+          //- .row.mg-top-20
+
+          .row.mg-top-20
+            .panel.panel-default.col-md-12(ng-repeat='customer in customers')
+              .row.mg-top-10
+                .col-md-5.mg-top-5
+                  p.mg-0
+                    span.gray-txt Nome:&nbsp;
+                    span {{customer.name}}
+                .col-md-5.mg-top-5
+                  p.mg-0
+                    span.gray-txt CPF/CNPJ:&nbsp;
+                    input.no-border(type="text", ng-model="customer.national_registration_number", ng-disabled="true", ui-br-cpfcnpj-mask)
+                  
+                  
+                .col-md-2
+                  .pull-right
+                    .btn-group.btn-group-sm(ng-if="!customersShowOne")
+                      a.btn.btn-default(ui-sref='base.customer_show({customerId: customer.id})')
+                       i.fa.fa-file-text-o.fa-lg
+                      | &nbsp;
+                    .btn-group.btn-group-sm(ng-if="customersShowOne")
+                      button.btn.btn-primary(ng-click="edit(customer)")
+                       i.fa.fa-edit.fa-lg
+                      | &nbsp;
+                    .btn-group.btn-group-sm(ng-if="customersShowOne")
+                      button.btn.btn-danger(ng-click="delete(customer)")
+                       i.fa.fa-remove.fa-lg
+
+
+              .row(ng-if="customersShowOne")
+                uib-accordion.col-md-12(close-others="true")
+
+                  uib-accordion-group.panel-default(is-open="addressesOpen")
+                    uib-accordion-heading
+                      span.cursor-pointer.blue-txt(style='font-size:12px;') Endereços
+                      i.cursor-pointer.pull-right.glyphicon(ng-class="{'glyphicon-chevron-down': addressesOpen, 'glyphicon-chevron-right': !addressesOpen}")
+
+                    .table-responsive(ng-if='customer._embedded.addresses.length>0')
+                      table.table.table-bordered.table-striped
+                        tbody
+                          tr
+                            th.text-center.vertical-align-middle Endereço
+                            th.text-center.vertical-align-middle Cidade
+                            th.text-center.vertical-align-middle CEP
+                            th
+
+                          tr(ng-repeat="address in customer._embedded.addresses")
+                            td(style="width: 50%") {{address.formatted_address}}
+                            td.text-center.vertical-align-middle(style="width: 20%") {{address.locality}}
+                            td.text-center.vertical-align-middle(style="width: 15%") {{address.postal_code}}
+                            td.text-center.vertical-align-middle(style="width: 15%")
+                              .btn-group.btn-group-sm
+                                button.btn.btn-primary(ng-click="editAddress(address)")
+                                 i.fa.fa-edit
+                                | &nbsp;
+                              .btn-group.btn-group-sm
+                                button.btn.btn-danger(ng-click="deleteAddress(address)")
+                                 i.fa.fa-remove
+
+                    .row.mg-0
+                      .col-md-12
+                        button.btn.btn-success(ng-click="createAddress(customer)") Adicionar &nbsp;&nbsp;&nbsp;
+                          i.fa.fa-plus
+
+
+
+                  uib-accordion-group.panel-default(is-open="infosOpen")
+                    uib-accordion-heading
+                      span.cursor-pointer.blue-txt(style='font-size:12px;') Informações Adicionais
+                      i.cursor-pointer.pull-right.glyphicon(ng-class="{'glyphicon-chevron-down': infosOpen, 'glyphicon-chevron-right': !infosOpen}")
+
+                    .row.mg-0
+                      .col-md-3(ng-repeat='info in customer._embedded.infos')
+                        p.mg-0
+                          span.gray-txt {{info.key}}:&nbsp;
+                          span {{info.value}}
+                          .btn-group.btn-group-xs
+                            button.btn.btn-primary(ng-click="editAdditionalInformation(info)")
+                              i.fa.fa-edit
+                            | &nbsp;
+                          .btn-group.btn-group-xs
+                            button.btn.btn-danger(ng-click="deleteAdditionalInformation(info)")
+                              i.fa.fa-remove
+
+
+                    .row.mg-0
+                      .col-md-12
+                        button.btn.btn-success(ng-click="createAdditionalInformation(customer)") Adicionar &nbsp;&nbsp;&nbsp;
+                          i.fa.fa-plus
+
+
+              .row.mg-0
+                .col-md-3
+                  p.mg-0
+                    span.txt-11.gray-txt-light.italic-txt Adicionado em 
+                    span.txt-11.gray-txt-light.italic-txt(ng-model="customer.created_at", br-date-mask)
+                .col-md-3
+                  p.mg-0
+                    span.txt-11.gray-txt-light.italic-txt Atualizado em 
+                    span.txt-11.gray-txt-light.italic-txt(ng-model="customer.updated_at", br-date-mask)
+
+          
+
+      rd-widget-footer(ng-if="!customersShowOne")
+        uib-pagination.pagination-sm.pull-right(total-items="pagination.totalCount", ng-model="pagination.currentPage",ng-change="pageChanged()", first-text="Primeira", last-text="Última", next-text="Proxima", previous-text="Anterior", max-size="pagination.maxSize", items-per-page="pagination.perPage")
+        .clearfix

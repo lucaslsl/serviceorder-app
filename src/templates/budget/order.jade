@@ -1,0 +1,25 @@
+.modal-header
+  h4 Gerar Ordem de Serviço
+
+.modal-body 
+  form(name="form", novalidate, valdr-type="Order")
+    .container-fluid
+      .row
+        .col-md-4
+          .form-group
+            label Subtotal
+            input.form-control(type="text", id="subtotal", name="subtotal", ng-model="order.subtotal", ui-money-mask="maskDecimals", disabled)
+
+        .col-md-4
+          .form-group
+            label Desconto
+            input.form-control(type="text", ui-percentage-mask="0", id="discount", name="discount", ng-model="order.discount", ng-change="totalCostChanged()")
+
+        .col-md-4
+          .form-group
+            label Total
+            input.form-control(type="text", ng-model="totalCost", ui-money-mask="maskDecimals", disabled)
+
+.modal-footer
+  button.btn.btn-default(ng-click="cancel()") Cancelar
+  button.btn.btn-primary(ng-click="confirm(form)") Gerar 

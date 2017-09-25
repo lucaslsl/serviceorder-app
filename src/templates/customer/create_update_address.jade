@@ -1,0 +1,33 @@
+.modal-header
+  h4(ng-if="!isUpdate") Novo Endereço
+  h4(ng-if="isUpdate") Editar Endereço
+
+.modal-body 
+  form(name="form", novalidate, valdr-type="CustomerAddress")
+    .container-fluid    
+      .row
+        .col-md-12
+          .form-group(valdr-form-group)
+            label Endereço
+            input.form-control(type="text", id="formatted_address", name="formatted_address", ng-model="address.formatted_address")
+
+      .row
+        .col-md-6
+          .form-group(valdr-form-group)
+            label Cidade
+            input.form-control(type="text", id="locality", name="locality", ng-model="address.locality")
+
+        .col-md-6
+          .form-group(valdr-form-group)
+            label CEP
+            input.form-control(type="text", id="postal_code", name="postal_code", ng-model="address.postal_code", ui-br-cep-mask)
+      //- .row
+      //-   .col-md-6
+      //-     .form-group(valdr-form-group)
+      //-       label Google Place ID
+      //-       input.form-control(type="text", id="google_place_id", name="google_place_id", ng-model="address.google_place_id")
+  
+
+.modal-footer
+  button.btn.btn-default(ng-click="cancel()") Cancelar
+  button.btn.btn-primary(ng-click="confirm(form)") Salvar 
